@@ -106,8 +106,8 @@ MEGAMART/
 | 2026-08-20 | Pin del Torito personalizado: se creó `public/images/torito-pin.png` y se integró como marcador oficial en el mapa Leaflet con animación de pulso y marco dorado. |
 | 2026-08-20 | Modal de Bienvenida y Selección de Ubicación Inicial (`InitialLocationModal`): cuando un usuario nuevo abre la app por primera vez, aparece una ventana modal estilo Instacart/Rappi con el Torito y el mapa para seleccionar Delivery o Pickup. |
 | 2026-08-20 | Corregido error de hidratación en React/Next.js agregando guardas `mounted` en todos los componentes que leen el estado persistido del carrito en localStorage. |
-| 2026-08-20 | Importación faltante de `useEffect` en `Header.tsx` corregida. |
-| 2026-08-20 | Repositorio GitHub creado y sincronizado en: `https://github.com/stev12O/megamart-platform`. |
+| 2026-08-20 | Corregidas todas las importaciones de hooks (`useState`, `useEffect`) en `HeroBanner`, `MobileNav`, `ProductCard` y `Header`. Verificado con `npx tsc --noEmit` (0 errores). |
+| 2026-08-20 | Repositorio GitHub actualizado y sincronizado en: `https://github.com/stev12O/megamart-platform`. |
 | 2026-08-20 | Generado túnel público seguro HTTPS para pruebas móviles inmediatas y configuración de Vercel lista con auto-seed en build. |
 
 ## 🚧 En Progreso
