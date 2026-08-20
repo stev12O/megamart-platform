@@ -1,0 +1,133 @@
+// Prisma schema for MEGAMART
+// Configured with SQLite for the preview, ready to switch to postgresql for production
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Stores (Multi-tienda desde el día 1)
+model Store {
+  id          String    @id @default(cuid())
+  name        String    // "MEGAMART - Sucursal Principal"
+  slug        String    @unique
+  address     String
+  latitude    Float     // Coordenadas para el mapa
+  longitude   Float
+  phone       String
+  logoUrl     String?
+  isActive    Boolean   @default(true)
+  deliveryFee Float     @default(3.99)
+  minOrder    Float     @default(15.00)
+  products    Product[]
+  orders      Order[]
+  createdAt   DateTime  @default(now())
+}
+
+// Categorías
+model Category {
+  id        String    @id @default(cuid())
+  name      String    // "Panadería y Dulces", "Carnicería", etc.
+  slug      String    @unique
+  icon      String?   // Icon identifier
+  order     Int       @default(0)
+  products  Product[]
+}
+
+// Productos
+model Product {
+  id           String      @id @default(cuid())
+  storeId      String
+  store        Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  categoryId   String
+  category     Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?
+  price        Float
+  originalPrice Float?    // Para mostrar ofertas/descuentos
+  imageUrl     String?
+  stock        Int         @default(50)
+  unit         String      @default("unidad") // "kg", "lb", "unidad", "paquete"
+  isAvailable  Boolean     @default(true)
+  isFeatured   Boolean     @default(false)
+  badge        String?     // "Oferta", "Fresco", "Favorito"
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  orderItems   OrderItem[]
+}
+
+// Usuarios
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  phone     String?
+  password  String?
+  role      String    @default("CUSTOMER") // CUSTOMER, STORE_ADMIN, DRIVER, SUPER_ADMIN
+  addresses Address[]
+  orders    Order[]
+  createdAt DateTime  @default(now())
+}
+
+// Direcciones de entrega
+model Address {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label     String   @default("Casa") // "Casa", "Trabajo", "Otro"
+  street    String
+  city      String
+  state     String   @default("VA")
+  zipCode   String
+  notes     String?
+  isDefault Boolean  @default(false)
+  orders    Order[]
+  createdAt DateTime @default(now())
+}
+
+// Pedidos
+model Order {
+  id            String      @id @default(cuid())
+  orderNumber   String      @unique // e.g. "MM-8492"
+  storeId       String
+  store         Store       @relation(fields: [storeId], references: [id])
+  userId        String?
+  user          User?       @relation(fields: [userId], references: [id])
+  customerName  String
+  customerEmail String
+  customerPhone String
+  type          String      @default("DELIVERY") // "DELIVERY" | "PICKUP"
+  status        String      @default("PENDING")  // "PENDING", "CONFIRMED", "PREPARING", "READY", "ON_THE_WAY", "DELIVERED", "CANCELLED"
+  subtotal      Float
+  deliveryFee   Float       @default(0)
+  tip           Float       @default(0)
+  tax           Float       @default(0)
+  total         Float
+  paymentStatus String      @default("PAID") // "UNPAID", "PAID", "REFUNDED"
+  paymentMethod String      @default("CARD") // "CARD", "APPLE_PAY", "CASH"
+  paymentId     String?
+  addressId     String?
+  address       Address?    @relation(fields: [addressId], references: [id])
+  deliveryNotes String?
+  pickupTime    String?
+  items         OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+// Items de Pedido
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+  name      String
+  price     Float
+  quantity  Int
+  imageUrl  String?
+}
