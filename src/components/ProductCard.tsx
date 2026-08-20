@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Plus, Minus, Check, Eye } from "lucide-react";
 import { useCartStore, CartProduct } from "@/stores/cartStore";
